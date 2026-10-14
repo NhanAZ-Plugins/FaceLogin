@@ -1,59 +1,81 @@
 <?php
-
+/*
+*
+* Copyright (C) 2017 Muqsit Rayyan
+*
+*    ___                __             _
+*   / __\_ _  ___ ___  / /  ___   __ _(_)_ __
+*  / _\/ _` |/ __/ _ \/ /  / _ \ / _` | | '_ \
+* / / | (_| | (_|  __/ /__| (_) | (_| | | | | |
+* \/   \__,_|\___\___\____/\___/ \__, |_|_| |_|
+*                                |___/
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+*
+* @author Muqsit Rayyan
+* Twiter: http://twitter.com/muqsitrayyan
+* GitHub: http://github.com/Muqsit
+* Modified by NhanAZ on 2026-10-15 for Axolotl-PM API 5 and safe configuration handling.
+*
+*/
 namespace Muqsit;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
-use pocketmine\Player;
+use pocketmine\player\Player;
+use pocketmine\utils\Config;
 
 class FaceLogin extends PluginBase implements Listener {
 
-    private $messages = [];
+    /** @var array<int, string> */
+    private array $messages = [];
 
-    public function onEnable()
+    public function onEnable(): void
     {
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-        if(!is_dir($dir = $this->getDataFolder())){
-            mkdir($dir);
-        }
-        if(!is_file($dir."messages.yml")){
-            file_put_contents($dir."messages.yml", $this->getResource("messages.yml"));
+        $this->saveResource("messages.yml");
+        $config = new Config($this->getDataFolder() . "messages.yml", Config::YAML);
+        $rawMessages = $config->get("messages", []);
+        if (!is_array($rawMessages)) {
+            $this->getLogger()->warning("The messages.yml 'messages' value must be a list keyed from 1 to 8.");
+            return;
         }
 
-        $messages = [];
-        $data = yaml_parse_file($dir."messages.yml");
-        $switchToDefault = false;
-        if(isset($data["messages"])){
-            $messages = $data["messages"];
-            foreach($messages as $k => $v){
-                if(!is_numeric($k)){
-                    $this->getLogger()->critical("Số Dòng Trong messages.yml Phải Là Số Nguyên, $k. Đã Chuyển Sang Tin Nhắn Mặc Định.");
-                    $switchToDefault = true;
-                    break;
-                }elseif($k < 1 || $k > 8){
-                    $this->getLogger()->critical("Số Dòng Trong messages.yml Phải Lớn Hơn 0 Và Nhỏ Hơn 9, $k. Đã Chuyển Sang Tin Nhắn Mặc Định.");
-                    $switchToDefault = true;
-                    break;
-                }
+        foreach ($rawMessages as $line => $message) {
+            if (!is_int($line) || $line < 1 || $line > 8 || !is_string($message) || strlen($message) > 512) {
+                $this->getLogger()->warning("Ignoring an invalid messages.yml entry; use a string value on lines 1 through 8.");
+                continue;
             }
+            $this->messages[$line] = $message;
         }
-        if($switchToDefault){
-            $data = yaml_parse_file($this->getFile()."messages.yml");
-            $messages = $data["messages"];
-        }
-        $this->messages = $messages;
+        ksort($this->messages, SORT_NUMERIC);
     }
 
-    public function sendFace(Player $player, array $messages = null)
-    {
-        $this->getServer()->getScheduler()->scheduleAsyncTask(new SendPlayerFaceTask($player->getName(), $player->getSkinData(), $messages ?? $this->messages));
+    /** @param array<int, string>|null $messages */
+    public function sendPlayerFace(Player $player, ?array $messages = null): void{
+        $skinData = $player->getSkin()->getSkinData();
+        if (!SkinFaceRenderer::isSupportedSkinData($skinData)) {
+            $this->getLogger()->debug("Skipped the face portrait for a skin with an unsupported image size.");
+            return;
+        }
+
+        $this->getServer()->getAsyncPool()->submitTask(new SendPlayerFaceTask(
+            $player->getName(),
+            $skinData,
+            $messages ?? $this->messages,
+        ));
     }
 
-    public function onJoin(PlayerJoinEvent $event)
-    {
-        if($event->getPlayer()->hasPermission("facelogin.show")){
-            $this->sendFace($event->getPlayer());
+    public function onJoin(PlayerJoinEvent $event): void {
+        $player = $event->getPlayer();
+        if (!$player->hasPermission("facelogin.show")) {
+            return;
         }
+        $this->sendPlayerFace($player);
     }
 }

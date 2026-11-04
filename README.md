@@ -1,6 +1,15 @@
 # FaceLogin
 
-FaceLogin sends a small text portrait made from a joining player's skin, followed by configurable welcome messages. It does not authenticate players or protect accounts.
+Player skin portrait welcome plugin for Axolotl-PM API 5.
+
+[![CI](https://github.com/NhanAZ-Plugins/FaceLogin/actions/workflows/build.yml/badge.svg)](https://github.com/NhanAZ-Plugins/FaceLogin/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/NhanAZ-Plugins/FaceLogin)](https://github.com/NhanAZ-Plugins/FaceLogin/releases/latest)
+[![License](https://img.shields.io/github/license/NhanAZ-Plugins/FaceLogin)](https://github.com/NhanAZ-Plugins/FaceLogin/blob/main/LICENSE)
+[![Discord](https://img.shields.io/discord/986553214889517088?label=Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/j2X83ujT6c)
+
+## Overview
+
+This plugin targets the PocketMine-MP and Axolotl-PM API 5 ecosystem and is maintained under [NhanAZ-Plugins](https://github.com/NhanAZ-Plugins).
 
 ## Compatibility
 
@@ -30,5 +39,3 @@ The GitHub Actions workflow uses the [DevTools](https://github.com/NhanAZ/DevToo
 ## Attribution and license
 
 This plugin is based on [Muqsit's FaceLogin](https://github.com/Muqsit/FaceLogin/tree/71ee8a9b5384a17d180b75307fa4de1874f5f525). The original face-rendering implementation is credited to Legoboy0215 in the source. Original copyright and license notices are retained. The upstream repository's `LICENSE.md` is included. The existing sample configuration also retains its Ghast Noob attribution note.
-
-For help with the NhanAZ ecosystem, visit [NhanAZ Discord](https://discord.gg/j2X83ujT6c).

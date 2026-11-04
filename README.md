@@ -35,4 +35,9 @@ The GitHub Actions workflow uses the [DevTools](https://github.com/NhanAZ/DevToo
 
 ## Attribution and license
 
-This plugin is based on [Muqsit's FaceLogin](https://github.com/Muqsit/FaceLogin/tree/71ee8a9b5384a17d180b75307fa4de1874f5f525). The original face-rendering implementation is credited to Legoboy0215 in the source. Original copyright and license notices are retained. The upstream repository's `LICENSE.md` is included. The existing sample configuration also retains its Ghast Noob attribution note.
+This plugin is based on [Muqsit's FaceLogin](https://github.com/Muqsit/FaceLogin/tree/71ee8a9b5384a17d180b75307fa4de1874f5f525). The original face-rendering implementation is credited to Legoboy0215 in the source. Original copyright and license notices are retained. The upstream repository's `LICENSE.md` is included. The existing sample configuration also retains its NhanAZ attribution note.
+
+
+## Credits
+
+Authors: NhanAZ, Muqsit.
